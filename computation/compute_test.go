@@ -6,10 +6,22 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"test.com/fizzbuzz/computation"
+	"test.com/fizzbuzz/metrics"
 )
 
+func compute(int1, int2, limit uint64, str1, str2 string) ([]interface{}, []error) {
+	return computation.Compute(
+		metrics.Parameters{
+			Int1:  int1,
+			Int2:  int2,
+			Limit: limit,
+			Str1:  str1,
+			Str2:  str2,
+		})
+}
+
 func TestComputation(t *testing.T) {
-	values, errs := computation.Compute(3, 5, 20, "fizz", "buzz")
+	values, errs := compute(3, 5, 20, "fizz", "buzz")
 
 	assert.Empty(t, errs)
 
@@ -23,7 +35,7 @@ func TestComputation(t *testing.T) {
 		values,
 	)
 
-	values, errs = computation.Compute(0, 5, 20, "fizz", "buzz")
+	values, errs = compute(0, 5, 20, "fizz", "buzz")
 
 	assert.Empty(t, values)
 
@@ -34,7 +46,7 @@ func TestComputation(t *testing.T) {
 		errs,
 	)
 
-	values, errs = computation.Compute(0, 0, 20, "fizz", "buzz")
+	values, errs = compute(0, 0, 20, "fizz", "buzz")
 
 	assert.Empty(t, values)
 
@@ -46,13 +58,13 @@ func TestComputation(t *testing.T) {
 		errs,
 	)
 
-	values, errs = computation.Compute(123, 456, 0, "fizz", "buzz")
+	values, errs = compute(123, 456, 0, "fizz", "buzz")
 
 	assert.Empty(t, values)
 
 	assert.Empty(t, errs)
 
-	values, errs = computation.Compute(3, 5, 2, "fizz", "buzz")
+	values, errs = compute(3, 5, 2, "fizz", "buzz")
 
 	assert.Empty(t, errs)
 
@@ -61,7 +73,7 @@ func TestComputation(t *testing.T) {
 		values,
 	)
 
-	values, errs = computation.Compute(3, 1, 7, "fizz", "buzz")
+	values, errs = compute(3, 1, 7, "fizz", "buzz")
 
 	assert.Empty(t, errs)
 
@@ -72,4 +84,33 @@ func TestComputation(t *testing.T) {
 		},
 		values,
 	)
+
+	values, errs = compute(1, 1, 1000, "1234567890", "1234567890")
+	assert.Empty(t, errs)
+	assert.NotEmpty(t, values)
+
+	values, errs = compute(1, 1, 1001, "1234567890", "1234567890")
+	assert.NotEmpty(t, errs)
+	assert.Empty(t, values)
+
+	values, errs = compute(1001, 1, 1001, "1234567890", "1234567890")
+	assert.NotEmpty(t, errs)
+	assert.Empty(t, values)
+
+	values, errs = compute(1001, 1, 1, "1234567890", "1234567890")
+	assert.NotEmpty(t, errs)
+	assert.Empty(t, values)
+
+	values, errs = compute(1, 1001, 1, "1234567890", "1234567890")
+	assert.NotEmpty(t, errs)
+	assert.Empty(t, values)
+
+	values, errs = compute(1, 1, 1, "1", "12345678901")
+	assert.NotEmpty(t, errs)
+	assert.Empty(t, values)
+
+	values, errs = compute(1, 1, 1, "12345678901", "1")
+	assert.NotEmpty(t, errs)
+	assert.Empty(t, values)
+
 }
