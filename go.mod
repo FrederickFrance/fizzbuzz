@@ -6,6 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.2
+	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
 )
 
 require (

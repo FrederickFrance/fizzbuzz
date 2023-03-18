@@ -8,6 +8,8 @@ import (
 
 	"test.com/fizzbuzz/computation"
 	"test.com/fizzbuzz/logger"
+	"test.com/fizzbuzz/metrics"
+	"test.com/fizzbuzz/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -76,7 +78,21 @@ func FillRouter() {
 			}
 			c.String(http.StatusBadRequest, fmt.Sprint(errs))
 		} else {
-			stringsArray, errorsArray := computation.Compute(uint1, uint2, ulimit, str1, str2)
+			param := metrics.Parameters{
+				Int1:  uint1,
+				Int2:  uint2,
+				Limit: ulimit,
+				Str1:  str1,
+				Str2:  str2,
+			}
+
+			if value, ok := metrics.UsedParameters[param]; !ok {
+				metrics.UsedParameters[param] = 1
+			} else {
+				metrics.UsedParameters[param] = value + 1
+			}
+
+			stringsArray, errorsArray := computation.Compute(param)
 			if len(errorsArray) > 0 {
 				for _, e := range errorsArray {
 					logger.Logger.Error(e)
@@ -88,7 +104,15 @@ func FillRouter() {
 		}
 
 	})
+	r.GET("/metrics", func(c *gin.Context) {
+		result := utils.MostUsed(metrics.UsedParameters)
+		if result == nil {
+			c.Status(http.StatusNoContent)
+		} else {
+			c.String(http.StatusOK, fmt.Sprint(*result))
+		}
+	})
 	if err := r.Run(); err != nil {
-		logger.Logger.WithField("error", err).Panic("Launch")
+		logger.Logger.WithField("error", err).Panic("Panic during launching")
 	}
 }
