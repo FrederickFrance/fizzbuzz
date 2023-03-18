@@ -109,7 +109,7 @@ func FillRouter() {
 		if result == nil {
 			c.Status(http.StatusNoContent)
 		} else {
-			c.String(http.StatusOK, fmt.Sprint(*result))
+			c.JSON(http.StatusOK, *result)
 		}
 	})
 	if err := r.Run(); err != nil {

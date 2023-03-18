@@ -9,9 +9,6 @@ import (
 // Logger is the global logger instance which can be used in all the packages.
 var Logger logrus.Logger
 
-// LogFields is a shortcut for a map of interfaces.
-type LogFields = map[string]interface{}
-
 func init() {
 	level := logrus.InfoLevel
 
